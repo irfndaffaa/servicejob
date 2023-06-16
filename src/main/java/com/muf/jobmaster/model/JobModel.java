@@ -14,13 +14,13 @@ import lombok.Setter;
 public class JobModel {
 
     @Id
-    public String empl_job_code;
-    public String empl_job_desc;
-    public String empl_log_id;
-    public Long empl_deleted;
-    public String empl_job_status;
-    public String empl_com_id;
-    public String empl_job_notes;
-    public Long empl_flag_pool;
+    public String emplJobCode;
+    public String emplJobDesc;
+    public String emplLogId;
+    public Long emplDeleted;
+    public String emplJobStatus;
+    public String emplComId;
+    public String emplJobNotes;
+    public Long emplFlagPool;
     
 }

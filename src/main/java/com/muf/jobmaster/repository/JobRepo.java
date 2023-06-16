@@ -41,5 +41,9 @@ public interface JobRepo extends JpaRepository<JobModel, String> {
                     "from mufparam.mst_empl_job_dev j " +
                     "order by j.empl_job_code asc", nativeQuery = true)
     List<JobModel> getAllJobData();
+
+    List<JobModel> findAllOrderByEmplJobCodeAsc();
+
+    JobModel findByIdAndDeletedIsFalse(String jobCode);
     
 }
