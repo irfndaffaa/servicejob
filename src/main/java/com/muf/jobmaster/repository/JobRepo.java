@@ -13,37 +13,14 @@ import com.muf.jobmaster.model.JobModel;
 @Repository
 public interface JobRepo extends JpaRepository<JobModel, String> {
 
+    List<JobModel> findAllByOrderByEmplJobCodeAsc();
+    JobModel findByEmplJobCodeAndEmplDeletedIsFalse(String jobCode);
+    JobModel findByEmplJobDescAndEmplDeletedIsFalse(String jobDesc);
+    JobModel findByEmplJobCode(String jobCode);
+    int countByEmplJobDesc(String jobDesc);
+
     @Query(value = "select count(j.empl_job_code) " +
                    "from mufparam.mst_empl_job_dev j " +
                    "where j.empl_job_code =?1", nativeQuery = true)
     int cekKodeJob(String jobCode);
-
-    @Query(value = "select j.empl_job_code, " +
-                   "j.empl_job_desc, " +
-                   "j.empl_log_id, " +
-                   "j.empl_deleted, " +
-                   "j.empl_job_status, " +
-                   "j.empl_com_id, " +
-                   "j.empl_job_notes, " +
-                   "j.empl_flag_pool " +
-                   "from mufparam.mst_empl_job_dev j " +
-                   "where j.empl_job_code = ?1", nativeQuery = true)
-    JobModel getJobData(String jobCode);
-
-    @Query(value = "select j.empl_job_code, " +
-                    "j.empl_job_desc, " +
-                    "j.empl_log_id, " +
-                    "j.empl_deleted, " +
-                    "j.empl_job_status, " +
-                    "j.empl_com_id, " +
-                    "j.empl_job_notes, " +
-                    "j.empl_flag_pool " +
-                    "from mufparam.mst_empl_job_dev j " +
-                    "order by j.empl_job_code asc", nativeQuery = true)
-    List<JobModel> getAllJobData();
-
-    List<JobModel> findAllOrderByEmplJobCodeAsc();
-
-    JobModel findByIdAndDeletedIsFalse(String jobCode);
-    
 }

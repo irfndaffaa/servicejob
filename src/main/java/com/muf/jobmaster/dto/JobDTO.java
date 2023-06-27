@@ -1,19 +1,12 @@
-package com.muf.jobmaster.model;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+package com.muf.jobmaster.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
-@Table(name = "MST_EMPL_JOB_DEV",schema = "MUFPARAM")
 @Getter
 @Setter
-public class JobModel {
+public class JobDTO {
 
-    @Id
     public String emplJobCode;
     public String emplJobDesc;
     public String emplLogId;
@@ -22,5 +15,8 @@ public class JobModel {
     public String emplComId;
     public String emplJobNotes;
     public Long emplFlagPool;
+    public String insertBy;
+    public String updateBy;
+    public String msg;
     
 }

@@ -7,6 +7,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.muf.jobmaster.dto.JobDTO;
 import com.muf.jobmaster.model.JobModel;
 import com.muf.jobmaster.repository.JobRepo;
 import com.muf.jobmaster.service.JobMasterService;
@@ -27,21 +28,21 @@ public class JobServiceImpl implements JobMasterService {
     }
 
     @Override
-    public JobModel insertJob(JobModel jobModel) throws Exception {
+    public JobModel insertJob(JobDTO jobModelDto) throws Exception {
         
         JobModel dataJobModel = new JobModel();
-        String logid = "[553F2C26-7232-307A-E044-00144F67D22C]";
+        String logid = "insert by: "+jobModelDto.getInsertBy();
 
         try{
 
-            dataJobModel.setEmplJobCode(jobModel.getEmplJobCode());
-            dataJobModel.setEmplJobDesc(jobModel.getEmplJobDesc());
+            dataJobModel.setEmplJobCode(jobModelDto.getEmplJobCode());
+            dataJobModel.setEmplJobDesc(jobModelDto.getEmplJobDesc());
             dataJobModel.setEmplLogId(logid);
-            dataJobModel.setEmplDeleted(jobModel.getEmplDeleted());
-            dataJobModel.setEmplJobStatus(jobModel.getEmplJobStatus());
-            dataJobModel.setEmplComId(jobModel.getEmplComId());
-            dataJobModel.setEmplJobNotes(jobModel.getEmplJobNotes());
-            dataJobModel.setEmplFlagPool(jobModel.getEmplFlagPool());
+            dataJobModel.setEmplDeleted(jobModelDto.getEmplDeleted());
+            dataJobModel.setEmplJobStatus(jobModelDto.getEmplJobStatus());
+            dataJobModel.setEmplComId(jobModelDto.getEmplComId());
+            dataJobModel.setEmplJobNotes(jobModelDto.getEmplJobNotes());
+            dataJobModel.setEmplFlagPool(jobModelDto.getEmplFlagPool());
 
             jobRepository.save(dataJobModel);
 
@@ -55,16 +56,46 @@ public class JobServiceImpl implements JobMasterService {
 
     @Override
     public List<JobModel> getAllDataJob() {
-        return jobRepository.findAllOrderByEmplJobCodeAsc();
+        return jobRepository.findAll();
     }
 
-    // @Override
-    // public JobModel updateJob(JobModel jobModel) {
+    @Override
+    public JobModel updateJob(JobDTO jobModelDto) {
 
+        JobModel dataJobModel = jobRepository.findByEmplJobCodeAndEmplDeletedIsFalse(jobModelDto.getEmplJobCode());
+        String logid = "Update By: " + jobModelDto.getUpdateBy();
+
+        try{
+            dataJobModel.setEmplJobDesc(jobModelDto.getEmplJobDesc());
+            dataJobModel.setEmplLogId(logid);
+            dataJobModel.setEmplJobStatus(jobModelDto.getEmplJobStatus());
+            dataJobModel.setEmplComId(jobModelDto.getEmplComId());
+            dataJobModel.setEmplJobNotes(jobModelDto.getEmplJobNotes());
+            dataJobModel.setEmplFlagPool(jobModelDto.getEmplFlagPool());
+
+            jobRepository.save(dataJobModel);
+
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+        }
+
+        return dataJobModel;
+    }
+
+    @Override
+    public JobModel deleteJob(JobDTO jobModelDto) {
+
+        JobModel dataJobModel = jobRepository.findByEmplJobCodeAndEmplDeletedIsFalse(jobModelDto.getEmplJobCode());
+
+        try{
+            dataJobModel.setEmplDeleted(jobModelDto.getEmplDeleted());
+            jobRepository.save(dataJobModel);
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+        }
         
-
-    //     return null;
-    // }
+        return dataJobModel;
+    }
 
     
 }
