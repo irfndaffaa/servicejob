@@ -1,5 +1,7 @@
 package com.muf.jobmaster.dto;
 
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,5 +20,11 @@ public class JobDTO {
     public String insertBy;
     public String updateBy;
     public String msg;
+    public String logId;
+    public Date logDate;
+    public String userId;
+    public String memo;
+    public String ipAddr;
+    public String branchCode;
     
 }

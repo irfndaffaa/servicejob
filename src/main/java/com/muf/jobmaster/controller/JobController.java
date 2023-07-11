@@ -34,18 +34,18 @@ public class JobController {
         this.jobRepository = jobRepository;
     }
 
-    // @GetMapping
-	// public String testConnection() throws Exception{
-	// 	String index = "";
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+	public String testConnection() throws Exception{
+		String index = "";
 		
-	// 	try {
-	// 		index = "Service MDM - Job Master";
-	// 	} catch(Exception e) {
-	// 		e.printStackTrace();
-	// 	}
+		try {
+			index = "Service MDM - Job Master";
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		
-	// 	return index;
-	// }
+		return index;
+	}
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> insertJobMaster(@RequestBody JobDTO jobModelDto) throws Exception{
@@ -99,55 +99,74 @@ public class JobController {
 
     }
 
-    @PutMapping
-    public ResponseEntity<Map<String, Object>> updateJobMaster(@RequestBody JobDTO jobModelDto){
+    @RequestMapping(value = "/updateJob", method = RequestMethod.POST)
+    // @PutMapping
+	public ResponseEntity<Map<String, Object>> updateJob(@RequestBody JobDTO jobM) throws Exception{
+
+		Map<String, Object> result = new HashMap<>();
+		JobModel jm = new JobModel();
+        int cekJobDesc = jobRepository.countByEmplJobDesc(jobM.getEmplJobDesc());
+        JobModel jobDesc = jobRepository.findByEmplJobDescAndEmplDeletedIsFalse(jobM.getEmplJobDesc());
+
+		try{
+			
+			if(cekJobDesc != 0 && jobM.getEmplJobCode().equals(jobDesc.getEmplJobCode())){
+				jm = jobService.updateJob(jobM);
+				result.put("status", true);
+				result.put("data", jm);
+				return new ResponseEntity<>(result, HttpStatus.OK);
+			} else if(cekJobDesc != 0) {
+                result.put("app", "MDM Job Master");
+				result.put("message", "Job "+ jobM.getEmplJobDesc() + " telah terdaftar dengan kode job " + jobDesc.getEmplJobCode());
+				return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+			} else {
+                jm = jobService.updateJob(jobM);
+				result.put("status", true);
+				result.put("data", jm);
+				return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+			
+		}catch (ApplicationException e) {
+			result.put("message", e.getMessage());
+			result.put("status", false);
+			return new org.springframework.http.ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+    @RequestMapping(value = "/activationJob", method = RequestMethod.POST)
+    // @DeleteMapping
+	public ResponseEntity<Map<String, Object>> activationJob(@RequestBody JobDTO jobM) throws Exception{
+
+		Map<String, Object> result = new HashMap<>();
+		JobModel jm = new JobModel();
+
+		try{
+			jm = jobService.activationJob(jobM);
+			result.put("status", true);
+			result.put("data", jm);
+			 return new ResponseEntity<>(result, HttpStatus.OK);
+		}catch (ApplicationException e) {
+			result.put("message", e.getMessage());
+			result.put("status", false);
+			return new org.springframework.http.ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+    @RequestMapping(value = "/getByCode", method = RequestMethod.GET)
+    public ResponseEntity<Map<String,Object>> getJobByCode(@RequestBody JobDTO jobModelDTO){
 
         Map<String, Object> result = new HashMap<>();
         JobModel dataJobMaster = new JobModel();
-        JobModel cekJobDeleted = jobRepository.findByEmplJobCode(jobModelDto.getEmplJobCode());
-        int cekJobDesc = jobRepository.countByEmplJobDesc(jobModelDto.getEmplJobDesc());
-        JobModel jobDesc = jobRepository.findByEmplJobDescAndEmplDeletedIsFalse(jobModelDto.getEmplJobDesc());
-
 
         try{
-            if(cekJobDesc != 0){
-                result.put("app", "MDM Job Master");
-                result.put("message", "Job "+ jobModelDto.getEmplJobDesc() + " sudah ada dengan kode job " + jobDesc.getEmplJobCode());
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            } else {
-                dataJobMaster = jobService.updateJob(jobModelDto);
-                result.put("app", "MDM Job Master");
-                result.put("message", "Data berhasil diubah");
-                result.put("data", dataJobMaster);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-        }catch(ApplicationException e){
-            result.put("status", false);
-            result.put("message", e.getMessage());
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
-
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Map<String, Object>> deleteJob(@RequestBody JobDTO jobModelDto){
-
-        Map<String, Object> result = new HashMap<>();
-        JobModel dataJobMaster = new JobModel();
-        JobModel cekJob = jobRepository.findByEmplJobCodeAndEmplDeletedIsFalse(jobModelDto.getEmplJobCode());
-
-        try{
-            if(cekJob == null){
-                result.put("message", "Data tidak ada");
-                return new ResponseEntity<Map<String,Object>>(result, HttpStatus.BAD_REQUEST);
-            }
-            dataJobMaster = jobService.deleteJob(jobModelDto);
-            result.put("message", "Data berhasil dihapus");
+            dataJobMaster = jobService.getJobByCode(jobModelDTO);
+            result.put("app", "MDM Job Master");
+            result.put("message", "Data berhasil ditambahkan");
             result.put("data", dataJobMaster);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch(ApplicationException e){
+            result.put("message", e);
             result.put("status", false);
-            result.put("message", e.getMessage());
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
 
